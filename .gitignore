@@ -27,3 +27,5 @@ go.work.sum
 # Other
 *.toml
 *.html
+*.css
+
