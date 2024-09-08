@@ -22,6 +22,7 @@ func main() {
 	http.HandleFunc("/login", handler.Login(&conf))
 	http.HandleFunc("/callback", handler.Callback)
 	http.HandleFunc("/playback", handler.Playback)
+	http.HandleFunc("/get-playback-data", handler.HandleGetPlaybackData)
 
 	fmt.Println("Server started at http://localhost" + conf.Port)
 

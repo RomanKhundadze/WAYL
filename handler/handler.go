@@ -99,10 +99,10 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 }
 
 func Playback(w http.ResponseWriter, r *http.Request) {
-	playbackstate := getCurrentPlaybackState()
 	indexPath := path + "playback.html"
+
 	tmpl := template.Must(template.ParseFiles(indexPath))
-	tmpl.Execute(w, playbackstate)
+	tmpl.Execute(w, nil)
 }
 
 func getCurrentPlaybackState() PlaybackState {
@@ -167,11 +167,10 @@ func refreshToken() (*oauth2.Token, error) {
 	return newToken, nil
 }
 
-func FetchPlaybackState() {
-	ticker := time.NewTicker(3 * time.Second)
-	defer ticker.Stop()
-
-	for range ticker.C {
-		getCurrentPlaybackState()
+func HandleGetPlaybackData(w http.ResponseWriter, r *http.Request) {
+	playback := getCurrentPlaybackState()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(playback); err != nil {
+		http.Error(w, "Failed to encode playback data", http.StatusInternalServerError)
 	}
 }
