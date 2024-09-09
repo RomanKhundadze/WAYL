@@ -1,0 +1,52 @@
+body {
+    font-family: 'Space Mono', monospace;
+    font-size: 50px;
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: #fff;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.scroll-container {
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#track {
+    display: inline-block;
+    position: absolute;
+    white-space: nowrap;
+}
+
+#artist {
+    margin-top: 10px;
+}
+
+@keyframes scroll-left {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+.scroll-container.scroll #track {
+    animation: scroll-left 10s linear infinite;
+}
