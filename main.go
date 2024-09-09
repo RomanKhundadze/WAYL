@@ -23,14 +23,17 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	config.IniConf(&path)
+
+	config.InitConf(&path)
 
 	if _, err := toml.DecodeFile(path+"/config.toml", &conf); err != nil {
+		log.Fatal(err)
 	}
 }
 
 func main() {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(path))))
+
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(path+"/Website"))))
 
 	http.HandleFunc("/", handler.Root(&path))
 	http.HandleFunc("/login", handler.Login(&conf))

@@ -21,6 +21,7 @@ var (
 	oauth2Config *oauth2.Config
 	token        *oauth2.Token
 	path         *string
+	authPath     string
 )
 
 type PlaybackState struct {
@@ -36,9 +37,14 @@ type PlaybackState struct {
 func Root(pathP *string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path = pathP
+		var err error
+		authPath, err = os.UserHomeDir()
+		authPath += "/.WAYL"
+		if err != nil {
+			log.Fatal(err)
+		}
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
-
 }
 
 func Login(conf *config.Config) http.HandlerFunc {
@@ -51,7 +57,13 @@ func Login(conf *config.Config) http.HandlerFunc {
 			Endpoint:     spotify.Endpoint,
 		}
 
-		refPath := *path + "/refreshtoken"
+		if _, err := os.Stat(authPath); os.IsNotExist(err) {
+			if err := os.MkdirAll(authPath, os.ModePerm); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+		refPath := authPath + "/refreshtoken"
 
 		if _, err := os.Stat(refPath); errors.Is(err, os.ErrNotExist) {
 			url := oauth2Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
@@ -86,7 +98,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refPath := *path + "/refreshtoken"
+	refPath := authPath + "/refreshtoken"
 	file, err := os.Create(refPath)
 	if err != nil {
 		log.Fatal(err)
@@ -101,7 +113,7 @@ func Playback(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	indexPath := *path + "/playback.html"
+	indexPath := *path + "/Website/playback.html"
 
 	tmpl := template.Must(template.ParseFiles(indexPath))
 	tmpl.Execute(w, nil)
