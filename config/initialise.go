@@ -8,20 +8,17 @@ import (
 )
 
 func InitConf(PATH *string, AUTHPATH *string) error {
-	editPath := *PATH + "/Website"
-	if _, err := os.Stat(editPath); os.IsNotExist(err) {
-		if err := os.MkdirAll(editPath, os.ModePerm); err != nil {
-			return err
-		}
+	err := CreateConfigPath(PATH)
+	if err != nil {
+		return err
 	}
 
-	if _, err := os.Stat(*AUTHPATH); os.IsNotExist(err) {
-		if err := os.MkdirAll(*AUTHPATH, os.ModePerm); err != nil {
-			return err
-		}
+	err = CreateAuthPath(AUTHPATH)
+	if err != nil {
+		return err
 	}
 
-	editPath = *PATH + "/config.toml"
+	editPath := *PATH + "/config.toml"
 	if _, err := os.Stat(editPath); errors.Is(err, os.ErrNotExist) {
 		err := createToml(&editPath)
 		if err != nil {
@@ -83,4 +80,23 @@ func wget(url string, PATH *string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func CreateAuthPath(AUTHPATH *string) error {
+	if _, err := os.Stat(*AUTHPATH); os.IsNotExist(err) {
+		if err := os.MkdirAll(*AUTHPATH, os.ModePerm); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateConfigPath(PATH *string) error {
+	editPath := *PATH + "/Website"
+	if _, err := os.Stat(editPath); os.IsNotExist(err) {
+		if err := os.MkdirAll(editPath, os.ModePerm); err != nil {
+			return err
+		}
+	}
+	return nil
 }
