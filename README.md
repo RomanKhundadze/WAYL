@@ -18,8 +18,10 @@
    - **ClientID** and **ClientSecret**: Obtain these from the [Spotify Developer Dashboard](https://developer.spotify.com/).
    - **Port**: Choose a port number (e.g., `8080`).
 
-4. **Second Launch**:  
-   Run the application again to start the server.
+4. **Second Launch**:
+   Launch the application again. Open your browser and go to `http://localhost:PORT/` (replace `PORT` with the port number you configured).
+   You will be redirected to a login screen where you need to log in with your Spotify account.
+   After a successful login, you will be redirected to `http://localhost:PORT/playback`, where the currently playing music will be displayed.
 
 ## Usage
 
@@ -81,11 +83,3 @@ The `config` directory contains:
 - **`script.js`**: JavaScript file to handle dynamic updates and interactions.
 
 These files can be customized to your preferences. If any file is broken or improperly configured, use the `-rC` argument to reset them to their default state.
-
-## First Launch Steps
-
-1. Launch the server for the first time to generate the `config.toml`.
-2. Configure the `config.toml` file with your Spotify Client ID, Client Secret, and preferred port.
-3. Launch the server again. Open your browser and go to `http://localhost:PORT/` (replace `PORT` with the port number you configured).
-4. You will be redirected to a login screen where you need to log in with your Spotify account.
-5. After a successful login, you will be redirected to `http://localhost:PORT/playback`, where the currently playing music will be displayed.
