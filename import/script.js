@@ -1,5 +1,5 @@
 function updateText() {
-    fetch('/get-playback-data')
+    fetch('/getPlaybackData')
         .then(response => response.json())
         .then(data => {
             const trackElement = document.getElementById('track');

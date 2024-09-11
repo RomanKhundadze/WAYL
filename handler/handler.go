@@ -21,7 +21,7 @@ var (
 	oauth2Config *oauth2.Config
 	token        *oauth2.Token
 	path         *string
-	authPath     string
+	authPath     *string
 )
 
 type PlaybackState struct {
@@ -34,15 +34,10 @@ type PlaybackState struct {
 	IsPlaying bool `json:"is_playing"`
 }
 
-func Root(pathP *string) http.HandlerFunc {
+func Root(pathP *string, authPathP *string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path = pathP
-		var err error
-		authPath, err = os.UserHomeDir()
-		authPath += "/.WAYL"
-		if err != nil {
-			log.Fatal(err)
-		}
+		authPath = authPathP
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
@@ -57,13 +52,7 @@ func Login(conf *config.Config) http.HandlerFunc {
 			Endpoint:     spotify.Endpoint,
 		}
 
-		if _, err := os.Stat(authPath); os.IsNotExist(err) {
-			if err := os.MkdirAll(authPath, os.ModePerm); err != nil {
-				log.Fatal(err)
-			}
-		}
-
-		refPath := authPath + "/refreshtoken"
+		refPath := *authPath + "/refreshtoken"
 
 		if _, err := os.Stat(refPath); errors.Is(err, os.ErrNotExist) {
 			url := oauth2Config.AuthCodeURL("state", oauth2.AccessTypeOffline)
@@ -75,7 +64,8 @@ func Login(conf *config.Config) http.HandlerFunc {
 			}
 			token, err = refreshToken()
 			if err != nil {
-				log.Fatal(err)
+				log.Println("Error refreshing token:", err)
+				return
 			}
 
 			http.Redirect(w, r, "/playback", http.StatusSeeOther)
@@ -98,10 +88,11 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	refPath := authPath + "/refreshtoken"
+	refPath := *authPath + "/refreshtoken"
 	file, err := os.Create(refPath)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error creating refreshtoken file:", err)
+		return
 	}
 	file.WriteString(token.RefreshToken)
 
@@ -110,6 +101,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 func Playback(w http.ResponseWriter, r *http.Request) {
 	if path == nil {
+		log.Println("No Path defined going back to root")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

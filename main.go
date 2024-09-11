@@ -2,44 +2,82 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/BurntSushi/toml"
 	"local.wayl/config"
 	"local.wayl/handler"
+	"local.wayl/manageRuntime"
+	"log"
+	"net/http"
+	"os"
 )
 
 var (
-	conf config.Config
-	path string
+	conf     config.Config
+	path     string
+	authPath string
 )
 
 func init() {
-	var err error
-	path, err = os.UserHomeDir()
-	path += "/.config/WAYL"
+	newPath, err := os.UserHomeDir()
+	newPath += "/.config/WAYL"
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error Creating var path:", err)
+	}
+	path = newPath
+	authPath, err = os.UserHomeDir()
+	authPath += "/.WAYL"
+	if err != nil {
+		log.Println("Error Creating var authPath:", err)
+		return
 	}
 
-	config.InitConf(&path)
+	err = config.InitConf(&path, &authPath)
+	if err != nil {
+		log.Fatal("Error Initialising Configs:", err)
+		return
+	}
 
 	if _, err := toml.DecodeFile(path+"/config.toml", &conf); err != nil {
-		log.Fatal(err)
+		log.Fatal("Error Decoding config.toml:", err)
+	}
+}
+
+func processArgs() {
+	if len(os.Args) < 2 {
+		return
+	}
+
+	for i := 1; i < len(os.Args); i++ {
+		arg := os.Args[i]
+
+		switch arg {
+		case "-k":
+			if len(os.Args) != 2 {
+				log.Fatal("Error: can only pass 1 argument when using -k")
+			}
+			manageRuntime.KillRunningInstances()
+			os.Exit(0)
+
+		default:
+			log.Fatalf("Error: unknown argument '%s'", arg)
+		}
 	}
 }
 
 func main() {
+	processArgs()
 
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(path+"/Website"))))
+	fileServer := http.FileServer(http.Dir(path + "/Website"))
+	http.Handle("/website/", http.StripPrefix("/website/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		fileServer.ServeHTTP(w, r)
+	})))
 
-	http.HandleFunc("/", handler.Root(&path))
+	http.HandleFunc("/", handler.Root(&path, &authPath))
 	http.HandleFunc("/login", handler.Login(&conf))
 	http.HandleFunc("/callback", handler.Callback)
 	http.HandleFunc("/playback", handler.Playback)
-	http.HandleFunc("/get-playback-data", handler.HandleGetPlaybackData)
+	http.HandleFunc("/getPlaybackData", handler.HandleGetPlaybackData)
 
 	fmt.Println("Server started at http://localhost" + conf.Port)
 
