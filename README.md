@@ -23,10 +23,6 @@
    You will be redirected to a login screen where you need to log in with your Spotify account.
    After a successful login, you will be redirected to `http://localhost:PORT/playback`, where the currently playing music will be displayed.
 
-## Usage
-
-When running `WAYL`, open your browser and navigate to the specified port (e.g., `http://localhost:8080/`).
-
 ### Command-Line Arguments
 
 WAYL accepts several command-line arguments:
