@@ -58,6 +58,40 @@ func processArgs() {
 			manageRuntime.KillRunningInstances()
 			os.Exit(0)
 
+		case "-rI":
+			err := config.DeleteAllData(&path)
+			if err != nil {
+				log.Fatal("Error deleting Configs:", err)
+			}
+			err = config.DeleteAllData(&authPath)
+			if err != nil {
+				log.Fatal("Error deleting Token:", err)
+			}
+			err = config.InitConf(&path, &authPath)
+			if err != nil {
+				log.Fatal("Error re-Initialising Configs:", err)
+			}
+
+		case "-rT":
+			err := config.DeleteAllData(&authPath)
+			if err != nil {
+				log.Fatal("Error deleting Token:", err)
+			}
+			err = config.CreateAuthPath(&authPath)
+			if err != nil {
+				log.Fatal("Error re-Initialising Token dir:", err)
+			}
+
+		case "-rC":
+			err := config.DeleteAllData(&path)
+			if err != nil {
+				log.Fatal("Error deleting Configs:", err)
+			}
+			err = config.CreateConfigPath(&path)
+			if err != nil {
+				log.Fatal("Error re-Initialising Token Configs:", err)
+			}
+
 		default:
 			log.Fatalf("Error: unknown argument '%s'", arg)
 		}
