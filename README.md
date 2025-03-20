@@ -29,39 +29,31 @@ WAYL accepts several command-line arguments:
 
 - **Without Arguments**  
   Runs the server normally. Creates any missing files if they are not found.
+    ```bash
+  ./WAYL
+  ```
 
 - **`-k`**  
-  Kills all running instances of the program.  
+  Kills all running instances of the program.
+    ```bash
+  ./WAYL -k
+  ```
 
 - **`-rI`**  
   Resets all configurations and tokens. Deletes all configuration and token data and reinitializes them.
+    ```bash
+  ./WAYL -rI
+  ```
 
 - **`-rT`**  
   Resets the token data. Deletes the token data and reinitializes the token directory.
+    ```bash
+  ./WAYL -rT
+  ```
 
 - **`-rC`**  
   Resets the configuration files. Deletes the configuration files and reinitializes them.
-
-### Example Usage
-
-- Launch the server normally:  
-  ```bash
-  ./WAYL
-  ```
-- Kill all running instances (cannot be combined with other arguments):  
-  ```bash
-  ./WAYL -k
-  ```
-- Reset all configurations and tokens:  
-  ```bash
-  ./WAYL -rI
-  ```
-- Reset only the token data:  
-  ```bash
-  ./WAYL -rT
-  ```
-- Reset only the configuration files:  
-  ```bash
+    ```bash
   ./WAYL -rC
   ```
 
