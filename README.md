@@ -32,11 +32,6 @@ WAYL accepts several command-line arguments:
 
 - **`-k`**  
   Kills all running instances of the program.  
-  *Note: No other arguments can be used with `-k`.*  
-  *Example:*  
-  ```bash
-  ./WAYL -k
-  ```
 
 - **`-rI`**  
   Resets all configurations and tokens. Deletes all configuration and token data and reinitializes them.
